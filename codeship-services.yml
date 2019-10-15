@@ -1,0 +1,4 @@
+nginx:
+  build:
+    image: tivix/docker-nginx:test
+    dockerfile: Dockerfile
