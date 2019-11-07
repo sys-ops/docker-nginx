@@ -8,16 +8,14 @@ steps:
     dockerfile: Dockerfile
     working_directory: ${{main_clone}}
     tag: ${{CF_BRANCH}}
-          
-  push_to_registry:
-    type: push
-    title: Pushing image to registry
-    candidate: ${{build_nginx}}
-    registry: dockerhub
-    tags:
-      - ${{CF_BRANCH}}
-      - ${{CF_SHORT_REVISION}}
 
+  build_cypress:
+    type: build
+    image_name: docker-nginx-cypress
+    dockerfile: Dockerfile
+    working_directory: ${{main_clone}}/cypress
+    tag: ${{CF_BRANCH}}
+          
   tests_composition:
     type: composition
     title: Runs tests
@@ -29,9 +27,7 @@ steps:
           image: ${{build_nginx}}
     composition_candidates:
       cypress:
-        # image: "cypress/included:3.2.0"
-        image: alpine
-        command: ash -e "ls -l /"
+        image: ${{build_cypress}}
         depends_on:
           - nginx
         environment:
@@ -39,7 +35,12 @@ steps:
           - CYPRESS_baseUrl=http://nginx:80
         # share the current folder as volume to avoid copying
         working_dir: /e2e
-    volumes:
-      - ./docker-nginx:/e2e
 
-
+  # push_to_registry:
+  #   type: push
+  #   title: Pushing image to registry
+  #   candidate: ${{build_nginx}}
+  #   registry: dockerhub
+  #   tags:
+  #     - ${{CF_BRANCH}}
+  #     - ${{CF_SHORT_REVISION}}
