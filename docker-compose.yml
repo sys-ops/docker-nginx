@@ -1,0 +1,21 @@
+version: '3.6'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80
+
+  cypress:
+    image: "cypress/included:3.2.0"
+    depends_on:
+      - nginx
+    environment:
+      # pass base url to test pointing at the web application
+      - CYPRESS_baseUrl=http://nginx:80
+    # share the current folder as volume to avoid copying
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e
