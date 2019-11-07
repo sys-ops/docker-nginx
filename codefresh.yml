@@ -31,8 +31,9 @@ steps:
       cypress:
         # image: "cypress/included:3.2.0"
         image: alpine
-        command:
+        commands:
           - ls -l /
+          - ls -l /codefresh/volume/
         depends_on:
           - nginx
         environment:
