@@ -38,6 +38,6 @@ steps:
         # share the current folder as volume to avoid copying
         working_dir: /e2e
         volumes:
-          - ./:/e2e
+          - ./docker-nginx/:/e2e
 
 
