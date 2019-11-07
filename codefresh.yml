@@ -2,18 +2,42 @@ version: '1.0'
 
 steps:
 
-    build_nginx:
-        type: build
-        image_name: tivix/docker-nginx
-        dockerfile: Dockerfile
-        working_directory: ${{main_clone}}
-        tag: ${{CF_BRANCH}}
-            
-    push_to_registry:
-        type: push
-        title: Pushing image to registry
-        candidate: ${{build_nginx}}
-        registry: dockerhub
-        tags:
-            - ${{CF_BRANCH}}
-            - ${{CF_SHORT_REVISION}}
+  build_nginx:
+    type: build
+    image_name: tivix/docker-nginx
+    dockerfile: Dockerfile
+    working_directory: ${{main_clone}}
+    tag: ${{CF_BRANCH}}
+          
+  push_to_registry:
+    type: push
+    title: Pushing image to registry
+    candidate: ${{build_nginx}}
+    registry: dockerhub
+    tags:
+      - ${{CF_BRANCH}}
+      - ${{CF_SHORT_REVISION}}
+
+  tests_composition:
+    type: composition
+    title: Runs tests
+    fail_fast: true
+    composition:
+      version: '3'
+      services:
+        nginx:
+          image: ${{build_nginx}}
+    composition_candidates:
+      cypress:
+        image: "cypress/included:3.2.0"
+        depends_on:
+          - nginx
+        environment:
+          # pass base url to test pointing at the web application
+          - CYPRESS_baseUrl=http://nginx:80
+        # share the current folder as volume to avoid copying
+        working_dir: /e2e
+        volumes:
+          - ${{CF_VOLUME_PATH}}/cypress:/e2e
+
+
