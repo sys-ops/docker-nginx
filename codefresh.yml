@@ -30,6 +30,9 @@ steps:
     composition_candidates:
       cypress:
         image: "cypress/included:3.2.0"
+        command:
+          - ls -l /codefresh/volume/
+          - ls -l /e2e
         depends_on:
           - nginx
         environment:
