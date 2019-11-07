@@ -37,7 +37,7 @@ steps:
           - CYPRESS_baseUrl=http://nginx:80
         # share the current folder as volume to avoid copying
         working_dir: /e2e
-        volumes:
-          - ./docker-nginx/:/e2e
+      volumes:
+        - ./docker-nginx/:/e2e
 
 
